@@ -2,7 +2,8 @@ package io.security.corespringsecurity.security.provider;
 
 import io.security.corespringsecurity.security.common.FormWebAuthenticationDetails;
 import io.security.corespringsecurity.security.service.AccountContext;
-import io.security.corespringsecurity.security.service.AccountDetails;
+import io.security.corespringsecurity.security.service.CustomUserDetails;
+import io.security.corespringsecurity.security.token.AjaxAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,18 +11,15 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-public class CustomAuthenticationProvider implements AuthenticationProvider {
+public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetails userDetails;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -31,20 +29,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String userName = authentication.getName();
         String password = (String) authentication.getCredentials();
 
-        AccountContext accountContext = (AccountContext) userDetailsService.loadUserByUsername(userName);
+        AccountContext accountContext = (AccountContext) userDetails.loadUserByUsername(userName);
 
         if (!passwordEncoder.matches(password,accountContext.getPassword())) {
             throw new BadCredentialsException("badCredentialsException");
         }
 
-        FormWebAuthenticationDetails details = (FormWebAuthenticationDetails) authentication.getDetails();
-
-        if(details.getSecretKey() == null || details.getSecretKey().equals("secret"))
-            throw new InsufficientAuthenticationException("InsufficientAuthenticationException");
-
-
-
-        return new UsernamePasswordAuthenticationToken(
+        return new AjaxAuthenticationToken(
                 accountContext.getAccount(),
                 null,
                 accountContext.getAuthorities());
@@ -52,6 +43,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(aClass);
+        return aClass.equals(AjaxAuthenticationToken.class);
     }
 }

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -21,6 +23,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Slf4j
+@Order(1)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
@@ -43,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/", "/users", "/user/login/**","/login*").permitAll()
+                .antMatchers("/", "/users", "/user/login/**", "/login*").permitAll()
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
@@ -58,7 +61,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(authenticationFailureHandler)
                 .permitAll()
                 .and()
-                .exceptionHandling().accessDeniedHandler(accessDeniedHandler());
+                .exceptionHandling()
+                .accessDeniedPage("/denied")
+                .accessDeniedHandler(accessDeniedHandler());
+
+
     }
 
     @Bean
@@ -69,4 +76,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 }
