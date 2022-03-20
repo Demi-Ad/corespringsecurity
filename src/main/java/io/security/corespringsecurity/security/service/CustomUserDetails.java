@@ -26,7 +26,7 @@ public class CustomUserDetails implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Not Found User"));
 
         return new AccountContext(account,
-                new ArrayList<GrantedAuthority>(Collections.singleton(new SimpleGrantedAuthority("ROLE_" + account.getRole()))));
+                new ArrayList<GrantedAuthority>(Collections.singleton(new SimpleGrantedAuthority("ROLE_" + account.getRole().toUpperCase()))));
     }
 
 
