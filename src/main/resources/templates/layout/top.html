@@ -15,6 +15,10 @@
                 </li>
 
                 <li sec:authorize="isAnonymous()" class="nav-item" >
+                    <a class="nav-link text-light" th:href="@{/api/login}">Api 로그인</a>
+                </li>
+
+                <li sec:authorize="isAnonymous()" class="nav-item" >
                     <a class="nav-link text-light" th:href="@{/users}">회원가입</a>
                 </li>
 
