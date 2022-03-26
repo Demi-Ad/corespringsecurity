@@ -1,6 +1,7 @@
 package io.security.corespringsecurity.security.service;
 
 import io.security.corespringsecurity.domain.entity.Account;
+import io.security.corespringsecurity.domain.entity.Role;
 import io.security.corespringsecurity.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         List<GrantedAuthority> collect = account.getUserRoles()
                 .stream()
-                .map(userRole -> userRole.getRoleName())
+                .map(Role::getRoleName)
                 .collect(Collectors.toSet())
                 .stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 

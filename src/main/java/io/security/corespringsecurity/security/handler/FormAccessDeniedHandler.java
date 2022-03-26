@@ -2,6 +2,7 @@ package io.security.corespringsecurity.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.security.corespringsecurity.util.WebUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class FormAccessDeniedHandler implements AccessDeniedHandler {
 
 	private String errorPage;
@@ -33,6 +35,7 @@ public class FormAccessDeniedHandler implements AccessDeniedHandler {
 			response.getWriter().write(this.mapper.writeValueAsString(ResponseEntity.status(HttpStatus.FORBIDDEN)));
 
 		} else {
+			log.error(accessDeniedException.getMessage());
 			String deniedUrl = errorPage + "?exception=" + accessDeniedException.getMessage();
 			redirectStrategy.sendRedirect(request, response, deniedUrl);
 		}
